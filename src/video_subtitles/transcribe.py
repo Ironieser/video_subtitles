@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-使用 faster-whisper 或 openai-whisper 对视频/音频进行语音识别，返回带时间戳的 segments。
-
-- faster-whisper 需要 Python >= 3.9；若在 3.8 下安装失败，可改用 openai-whisper（较慢）。
+Speech recognition via faster-whisper or openai-whisper; returns timestamped segments.
+faster-whisper requires Python >= 3.9; use openai-whisper on 3.8 (slower).
 """
 
 from pathlib import Path
@@ -19,24 +18,13 @@ def transcribe_video(
     word_timestamps: bool = False,
 ) -> Tuple[List[Any], Any]:
     """
-    对视频或音频文件做语音识别，返回 (segments, info)。
-
-    - video_path: 视频或音频文件路径
-    - model_size: 如 "tiny", "base", "small", "medium", "large-v3"
-    - device: "cuda", "cpu", "auto"
-    - compute_type: "float32", "int8" 等（仅 faster-whisper）
-    - language: 例如 "zh", "en"，None 表示自动检测
-    - word_timestamps: 是否返回词级时间戳（仅 faster-whisper 支持）
-
-    Returns:
-        segments: 每项有 .start, .end, .text（以及可选的 .words）
-        info: 识别结果中的 info 对象（如 language）
+    Transcribe video/audio; returns (segments, info).
+    Segments have .start, .end, .text (and optionally .words); info has .language.
     """
     path = Path(video_path)
     if not path.exists():
-        raise FileNotFoundError(f"文件不存在: {path}")
+        raise FileNotFoundError(f"File not found: {path}")
 
-    # 优先使用 faster-whisper（需 Python >= 3.9）
     try:
         from faster_whisper import Whisper
     except ImportError:
@@ -58,14 +46,13 @@ def _transcribe_with_openai_whisper(
     device: str,
     language: Optional[str],
 ) -> Tuple[List[Any], Any]:
-    """回退：使用 openai-whisper（支持 Python 3.8，速度较慢）。"""
+    """Fallback: openai-whisper (Python 3.8, slower)."""
     try:
         import whisper
     except ImportError:
         raise ImportError(
-            "未找到 faster-whisper（需 Python>=3.9）或 openai-whisper。\n"
-            "  - 推荐：使用 Python 3.9+ 后执行 pip install faster-whisper\n"
-            "  - 或当前环境执行：pip install openai-whisper"
+            "Install faster-whisper (Python>=3.9) or openai-whisper:\n"
+            "  pip install faster-whisper   # or  pip install openai-whisper"
         ) from None
 
     model = whisper.load_model(model_size, device=device if device != "auto" else None)

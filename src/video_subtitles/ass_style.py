@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-ASS (Advanced Substation Alpha) 样式与文件生成
-
-- 样式头部：字体、字号、颜色、描边、阴影、对齐、边距
-- 时间格式：秒 → H:MM:SS.cs
-- 将 Whisper 的 segments 写成 [Events] 的 Dialogue 行
+ASS (Advanced Substation Alpha) styles and file generation.
 """
 
 import sys
@@ -12,11 +8,8 @@ from pathlib import Path
 from typing import List, Union, Any
 
 
-# 1920x1080 下推荐；若视频分辨率不同可在生成时覆盖 PlayResX/Y
 DEFAULT_PLAY_RES_X = 1920
 DEFAULT_PLAY_RES_Y = 1080
-
-# Mac 默认无 SimHei，用系统黑体避免方框
 DEFAULT_FONT = "PingFang SC" if sys.platform == "darwin" else "SimHei"
 
 
@@ -40,13 +33,7 @@ def generate_ass_header(
     margin_v: int = 40,
     encoding: int = 1,
 ) -> str:
-    """
-    生成 .ass 文件的 [Script Info] 和 [V4+ Styles] 头部。
-
-    - alignment: 2=底中, 5=顶中, 8=底左, 10=画面中心
-    - border_style: 1=描边+阴影, 3=不透明背景框
-    - 颜色格式 AABBGGRR，例如 &H00FFFFFF 为白字
-    """
+    """Build [Script Info] and [V4+ Styles] header. Colours AABBGGRR; alignment 2=bottom-center."""
     if font_name is None:
         font_name = DEFAULT_FONT
     return f"""[Script Info]
@@ -64,7 +51,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 
 
 def format_time_ass(seconds: float) -> str:
-    """将秒数转为 .ass 时间格式 H:MM:SS.cs（百分之一秒）。"""
+    """Seconds → H:MM:SS.cs (centiseconds)."""
     hours = int(seconds // 3600)
     minutes = int((seconds % 3600) // 60)
     secs = int(seconds % 60)
@@ -73,7 +60,6 @@ def format_time_ass(seconds: float) -> str:
 
 
 def _escape_ass_text(text: str) -> str:
-    """ASS 中需转义：\\ → \\\\，{ → {{，} → }}；换行用 \\N。"""
     if not text:
         return ""
     return text.replace("\\", "\\\\").replace("{", "{{").replace("}", "}}").replace("\n", "\\N")
@@ -88,12 +74,7 @@ def create_ass_file(
     start_attr: str = "start",
     end_attr: str = "end",
 ) -> Path:
-    """
-    将 segment 列表写入 .ass 文件。
-
-    segments 中每项可为对象（有 .start / .end / .text）或 dict（可指定属性名）。
-    header 为空则使用 generate_ass_header() 默认头部。
-    """
+    """Write segments to .ass file. Each segment has .start, .end, .text (or dict keys)."""
     path = Path(filename)
     path.parent.mkdir(parents=True, exist_ok=True)
 
