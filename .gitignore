@@ -1,0 +1,17 @@
+# 生成的字幕与视频
+*.ass
+*.srt
+*.mkv
+*.avi
+*.mov
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+
+# 系统与编辑器
+.DS_Store
+*.swp
+*.swo
