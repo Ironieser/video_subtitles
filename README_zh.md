@@ -38,10 +38,28 @@ python run.py <视频路径> [选项]
 | `--language` | 语言代码（zh、en 等） | 自动检测 |
 | `--device` | 推理设备 | `auto`（cuda/cpu） |
 
+## 用 TTS 元数据直接打字幕（无需 ASR）
+
+若视频配音是由 TTS 生成，且已有 **narrator_metadata.json**（与 merged_narrator.wav 对应），可直接用元数据里的台词和时间生成字幕并烧录，无需跑 Whisper：
+
+```bash
+python run_from_metadata.py <视频路径> <narrator_metadata.json> [-o 输出视频] [--no-burn]
+```
+
+示例：
+
+```bash
+python run_from_metadata.py /path/to/final_video.mp4 tts/multi_turn_outputs_narrator4/narrator_metadata.json -o final_video_subbed.mp4
+```
+
+- 时间轴由 metadata 中的 `duration_seconds` / `duration_with_interval_seconds` 累加得到，与 TTS 音频一一对应。
+- `--no-burn` 只生成 .ass，不烧录。
+
 ## 目录结构
 
-- **`run.py`** — 唯一入口（命令行）
-- **`src/video_subtitles/`** — 代码包：`transcribe.py`、`ass_style.py`、`burn.py`
+- **`run.py`** — Whisper 识别 + 字幕烧录入口
+- **`run_from_metadata.py`** — 从 TTS metadata 直接生成字幕并烧录（无需 ASR）
+- **`src/video_subtitles/`** — 代码包：`transcribe.py`、`ass_style.py`、`burn.py`、`metadata_subs.py`
 
 ## 在代码中调用
 
