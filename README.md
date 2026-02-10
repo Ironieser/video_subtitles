@@ -1,6 +1,8 @@
 # video_subtitles
 
-Whisper speech recognition → ASS subtitles → optional FFmpeg burn-in. Works with Chinese/English on Mac, Windows, Linux.
+Small toolchain to turn spoken audio into ASS subtitles using Whisper, and optionally burn them into video with FFmpeg (hardsubs).
+
+English | [中文说明](README_zh.md)
 
 ## Requirements
 
